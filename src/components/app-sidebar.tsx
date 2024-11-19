@@ -3,11 +3,13 @@
 import * as React from "react";
 import {
   AudioWaveform,
+  Book,
   ChartNoAxesGantt,
   Command,
   GalleryVerticalEnd,
   PieChart,
   User,
+  Users,
 } from "lucide-react";
 
 import { NavUser } from "@/components/nav-user";
@@ -42,7 +44,7 @@ const data = {
       logo: Command,
     },
   ],
-  menu: [
+  platform: [
     {
       title: "Users",
       url: "users",
@@ -72,9 +74,31 @@ const data = {
       ],
     },
     {
+      title: "Training groups",
+      url: "/training-groups",
+      icon: Users,
+    },
+    {
       title: "Roadmap Templates",
-      url: "roadmap-templates",
+      url: "/roadmap-templates",
       icon: ChartNoAxesGantt,
+    },
+  ],
+  training: [
+    {
+      title: "Training group",
+      url: "/training-group",
+      icon: Users,
+    },
+    {
+      title: "Roadmap",
+      url: "/roadmap",
+      icon: AudioWaveform,
+    },
+    {
+      title: "Study",
+      url: "/study",
+      icon: Book,
     },
   ],
 };
@@ -86,7 +110,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.menu} />
+        <NavMain items={data.platform} name={"Platform"} />
+        <NavMain items={data.training} name={"Training"} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -21,6 +21,7 @@ import Link from "next/link";
 
 export function NavMain({
   items,
+  name,
 }: {
   items: {
     title: string;
@@ -32,10 +33,11 @@ export function NavMain({
       url: string;
     }[];
   }[];
+  name: string;
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{name}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) =>
           item.items ? (

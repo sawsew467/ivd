@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Template } from "@/features/roadmap-templates/types";
 import { TemplateCard } from "@/features/roadmap-templates/components/template-card";
 
-const templates: Template[] = [
+export const templates: Template[] = [
   {
     id: 1,
     title: "Web Development Mastery",
@@ -80,7 +80,7 @@ const TemplateManagement: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Templates</h1>
+        <h1 className="text-3xl font-bold mb-2">Templates</h1>
         <Button onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" />
           Add New Template

@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Search, Plus, Upload } from "lucide-react";
-import { useStore } from "@tanstack/react-store";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,12 +15,6 @@ export default function DocumentsLayout({
   children: React.ReactNode;
 }) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  const folderStructure = useStore(
-    documentsStore,
-    (state) => state.folderStructure
-  );
-  console.log("🚀 ~ folderStructure:", folderStructure);
 
   const handleFileUpload = (files: FileList | null) => {
     if (!files) return;

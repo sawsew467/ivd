@@ -30,19 +30,16 @@ const data = {
   },
   teams: [
     {
-      name: "IVD Inc",
+      name: "Project 1",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
     },
     {
-      name: "IVD Corp.",
+      name: "Project 2",
       logo: AudioWaveform,
-      plan: "Startup",
     },
     {
-      name: "Evil Corp.",
+      name: "Project 3",
       logo: Command,
-      plan: "Free",
     },
   ],
   menu: [

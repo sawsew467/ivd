@@ -1,7 +1,11 @@
-import React from "react";
+import { ClerkProvider } from "@clerk/nextjs";
 
 function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <div>{children}</div>;
+  return (
+    <div>
+      <ClerkProvider>{children}</ClerkProvider>
+    </div>
+  );
 }
 
 export default Providers;

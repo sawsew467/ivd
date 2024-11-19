@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   AudioWaveform,
+  ChartNoAxesGantt,
   Command,
   GalleryVerticalEnd,
   PieChart,
@@ -72,6 +73,11 @@ const data = {
           url: "/cv",
         },
       ],
+    },
+    {
+      title: "Roadmap Templates",
+      url: "roadmap-templates",
+      icon: ChartNoAxesGantt,
     },
   ],
 };

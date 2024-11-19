@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { documentsStore } from "@/features/documents/store";
-import { useParams } from "next/navigation";
 
 export default function DocumentsLayout({
   children,
@@ -60,7 +59,7 @@ export default function DocumentsLayout({
   };
 
   return (
-    <div className="container mx-auto space-y-8">
+    <div className="space-y-8">
       <header>
         <h1 className="text-3xl font-bold mb-2">My File Manager</h1>
         <p className="text-muted-foreground">

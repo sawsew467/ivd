@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { RoadmapStep } from "../types";
+import { toast } from "sonner";
 
 const initialRoadmapData: RoadmapStep[] = [
   {
@@ -99,6 +100,10 @@ export default function TemplateEditor() {
   };
 
   const handleDelete = (stepNumber: number) => {
+    if (roadmapData.length === 1) {
+      toast.error("Cannot delete the only step in the roadmap");
+      return;
+    }
     const updatedData = roadmapData
       .filter((step) => step.step_number !== stepNumber)
       .map((step) =>
@@ -200,6 +205,12 @@ export default function TemplateEditor() {
               </CardContent>
             </Card>
           ))}
+          <div className="flex justify-center w-full gap-2">
+            <Button className="" variant="destructive">
+              Delete
+            </Button>
+            <Button className="">Save roadmap</Button>
+          </div>
         </div>
       </div>
 

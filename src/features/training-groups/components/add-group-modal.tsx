@@ -53,7 +53,7 @@ function AddGroupModal({
       name: "",
       description: "",
     },
-    mode: "onChange", // Enables live validation feedback
+    mode: "onChange",
   });
 
   const { isSubmitting } = form.formState;

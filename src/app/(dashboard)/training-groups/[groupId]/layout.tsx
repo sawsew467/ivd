@@ -4,65 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePathname, useRouter } from "next/navigation";
+import { group } from "@/features/training-groups/data";
 
-interface Member {
-  id: string;
-  name: string;
-  email: string;
-  role: "Mentor" | "Mentee";
-  avatar: string;
-}
-
-interface TrainingGroup {
-  id: string;
-  name: string;
-  description: string;
-  members: Member[];
-}
-
-// This would typically come from props or a data fetching hook
-export const group: TrainingGroup = {
-  id: "1",
-  name: "Web Development Mastery",
-  description: "A comprehensive training program for aspiring web developers.",
-  members: [
-    {
-      id: "1",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      role: "Mentor",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: "2",
-      name: "Bob Smith",
-      email: "bob@example.com",
-      role: "Mentor",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: "3",
-      name: "Charlie Brown",
-      email: "charlie@example.com",
-      role: "Mentee",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: "4",
-      name: "Diana Prince",
-      email: "diana@example.com",
-      role: "Mentee",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: "5",
-      name: "Ethan Hunt",
-      email: "ethan@example.com",
-      role: "Mentee",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-  ],
-};
+const tabs = [
+  {
+    id: "general",
+    label: "General",
+  },
+  {
+    id: "roadmap-template",
+    label: "Roadmap",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+  },
+];
 
 export default function GroupDetail({
   children,
@@ -89,20 +46,25 @@ export default function GroupDetail({
           </Button>
         </div>
       </div>
-
-      <Tabs
-        defaultValue="general"
-        className="w-full"
-        onValueChange={(value) => router.replace(value)}
-        value={pathname.split("/").pop()}
-      >
-        <TabsList>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="roadmap-template">Roadmap</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
-        {children}
-      </Tabs>
+      {tabs.some((tab) => tab.id === pathname.split("/").pop()) ? (
+        <Tabs
+          defaultValue="general"
+          className="w-full"
+          onValueChange={(value) => router.replace(value)}
+          value={pathname.split("/").pop()}
+        >
+          <TabsList>
+            {tabs.map((tab) => (
+              <TabsTrigger value={tab.id} key={tab.id}>
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {children}
+        </Tabs>
+      ) : (
+        children
+      )}
     </div>
   );
 }

@@ -21,12 +21,13 @@ function MenteeLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { menteeId } = useParams();
   const mentee = group.members?.find((member) => member.id === menteeId);
+  console.log("🚀 ~ MenteeLayout ~ mentee:", mentee);
   return (
     <div>
       <div className="flex flex-col items-center mb-4">
         <Avatar className="w-20 h-20 mb-2">
           <AvatarImage src={mentee?.avatar} alt={mentee?.name} />
-          <AvatarFallback>
+          <AvatarFallback className="w-20 h-20 mb-2">
             {mentee?.name
               ?.split(" ")
               .map((n) => n[0])

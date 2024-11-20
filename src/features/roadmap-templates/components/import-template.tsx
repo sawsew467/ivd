@@ -1,4 +1,3 @@
-import { templates } from "@/app/(dashboard)/roadmap-templates/page";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,6 +9,7 @@ import {
 import { Import } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { Template } from "../types";
+import { templates } from "../data";
 
 function ImportTemplate({
   setTemplate,

@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 
-function page({ params }: { params: { groupId: string } }) {
-  const { groupId } = params;
+type tParams = Promise<{ groupId: string }>;
+
+async function page({ params }: { params: tParams }) {
+  const { groupId } = await params;
   redirect(`${groupId}/general`);
 }
 

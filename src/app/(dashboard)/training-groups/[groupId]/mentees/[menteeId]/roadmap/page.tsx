@@ -1,17 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { RoadmapStep, Template } from "@/features/roadmap-templates/types";
+import { RoadmapStep } from "@/features/roadmap-templates/types";
 import RoadmapGenerator from "@/features/training-groups/components/roadmap-generator";
 import RoadmapStarter from "@/features/training-groups/components/roadmap-starter";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 function Page() {
-  const router = useRouter();
   const seachParams = useSearchParams();
   const createBy = seachParams.get("createBy");
-  const [roadmap, setRoadmap] = useState<RoadmapStep[] | null>(null);
+  const [roadmap] = useState<RoadmapStep[] | null>(null);
 
   const renderRoadmap = () => {
     return <div>roadmap</div>;

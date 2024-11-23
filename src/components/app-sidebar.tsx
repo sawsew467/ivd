@@ -51,14 +51,14 @@ const data = {
       icon: User,
     },
     {
-      title: "Data",
+      title: "Project Data",
       url: "#",
       icon: PieChart,
       items: [
-        {
-          title: "Documents",
-          url: "/documents",
-        },
+        // {
+        //   title: "Documents",
+        //   url: "/documents",
+        // },
         {
           title: "History Tasks",
           url: "/history-tasks",
@@ -67,10 +67,10 @@ const data = {
           title: "Source Code",
           url: "/source-code",
         },
-        {
-          title: "CV",
-          url: "/cv",
-        },
+        // {
+        //   title: "CV",
+        //   url: "/cv",
+        // },
       ],
     },
     {
@@ -84,23 +84,23 @@ const data = {
       icon: ChartNoAxesGantt,
     },
   ],
-  training: [
-    {
-      title: "Training group",
-      url: "/training-group",
-      icon: Users,
-    },
-    {
-      title: "Roadmap",
-      url: "/roadmap",
-      icon: AudioWaveform,
-    },
-    {
-      title: "Study",
-      url: "/study",
-      icon: Book,
-    },
-  ],
+  // training: [
+  //   {
+  //     title: "Training group",
+  //     url: "/training-group",
+  //     icon: Users,
+  //   },
+  //   {
+  //     title: "Roadmap",
+  //     url: "/roadmap",
+  //     icon: AudioWaveform,
+  //   },
+  //   {
+  //     title: "Study",
+  //     url: "/study",
+  //     icon: Book,
+  //   },
+  // ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -111,7 +111,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.platform} name={"Platform"} />
-        <NavMain items={data.training} name={"Training"} />
+        {/* <NavMain items={data.training} name={"Training"} /> */}
       </SidebarContent>
       {/* <SidebarFooter>
         <NavUser user={data.user} />

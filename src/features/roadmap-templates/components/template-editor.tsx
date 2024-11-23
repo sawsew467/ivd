@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/dialog";
 import { RoadmapStep } from "../types";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const initialRoadmapData: RoadmapStep[] = [
+export const initialRoadmapData: RoadmapStep[] = [
   {
     step_number: 1,
     section: "Cooking Basics",
@@ -73,7 +75,11 @@ const initialRoadmapData: RoadmapStep[] = [
   },
 ];
 
-export default function TemplateEditor() {
+export default function TemplateEditor({
+  mode = "editor",
+}: {
+  mode?: "editor" | "viewer";
+}) {
   const [roadmapData, setRoadmapData] =
     useState<RoadmapStep[]>(initialRoadmapData);
   const [editingStep, setEditingStep] = useState<RoadmapStep | null>(null);
@@ -166,51 +172,67 @@ export default function TemplateEditor() {
                   <span>
                     {step.step_number}. {step.section}
                   </span>
-                  <div className="flex space-x-2">
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => handleCreate(step.step_number)}
-                      aria-label={`Create new step after ${step.section}`}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => handleEdit(step)}
-                      aria-label={`Edit ${step.section}`}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => handleDelete(step.step_number)}
-                      aria-label={`Delete ${step.section}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {mode === "editor" && (
+                    <div className="flex space-x-2">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleCreate(step.step_number)}
+                        aria-label={`Create new step after ${step.section}`}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleEdit(step)}
+                        aria-label={`Edit ${step.section}`}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleDelete(step.step_number)}
+                        aria-label={`Delete ${step.section}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="list-disc list-inside space-y-1">
+                <ul
+                  className={cn(
+                    " space-y-1",
+                    mode === "editor" && "list-disc list-inside"
+                  )}
+                >
                   {step.sub_section.map((item, index) => (
-                    <li key={index} className="text-muted-foreground list-disc">
-                      - {item}
+                    <li
+                      key={index}
+                      className={cn(
+                        "text-muted-foreground "
+                        // mode === "editor" && "list-disc"
+                      )}
+                    >
+                      {mode === "viewer" && <Checkbox className="mr-2" />}
+                      {item}
                     </li>
                   ))}
                 </ul>
               </CardContent>
             </Card>
           ))}
-          <div className="flex justify-center w-full gap-2">
-            <Button className="" variant="destructive">
-              Delete
-            </Button>
-            <Button className="">Save roadmap</Button>
-          </div>
+          {mode === "editor" && (
+            <div className="flex justify-center w-full gap-2">
+              <Button className="" variant="destructive">
+                Delete
+              </Button>
+              <Button className="">Save roadmap</Button>
+            </div>
+          )}
         </div>
       </div>
 

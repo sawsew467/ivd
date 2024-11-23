@@ -12,14 +12,14 @@ import {
   Users,
 } from "lucide-react";
 
-import { NavUser } from "@/components/nav-user";
+// import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  // SidebarFooter,
   SidebarHeader,
-  SidebarRail,
+  // SidebarRail,
 } from "@/components/ui/sidebar";
 
 import { NavMain } from "./nav-main";
@@ -47,7 +47,7 @@ const data = {
   platform: [
     {
       title: "Users",
-      url: "users",
+      url: "/users",
       icon: User,
     },
     {
@@ -113,10 +113,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.platform} name={"Platform"} />
         <NavMain items={data.training} name={"Training"} />
       </SidebarContent>
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
+      </SidebarFooter> */}
+      {/* <SidebarRail /> */}
     </Sidebar>
   );
 }

@@ -11,9 +11,10 @@ function MenteeCard({ mentee }: { mentee: Member }) {
     <li
       key={mentee.id}
       className="flex items-center space-x-4 p-4 border-[1px] rounded-lg cursor-pointer hover:bg-slate-200"
-      onClick={() =>
-        router.push(`/training-groups/${groupId}/mentees/${mentee.id}`)
-      }
+      onClick={() => {
+        localStorage.setItem("role", "mentor");
+        router.push(`/training-groups/${groupId}/mentees/${mentee.id}`);
+      }}
     >
       <Avatar>
         <AvatarImage src={mentee.avatar} alt={mentee.name} />

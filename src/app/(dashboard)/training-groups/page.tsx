@@ -5,9 +5,14 @@ import { TrainingGroup } from "@/features/training-groups/types";
 import { GroupCard } from "@/features/training-groups/components/group-card";
 import AddGroupModal from "@/features/training-groups/components/add-group-modal";
 import { useRouter } from "next/navigation";
+import { useGetAllGroupsQuery } from "@/store/queries/groups";
 
 export default function GroupsPage() {
   const router = useRouter();
+
+  const { data, refetch } = useGetAllGroupsQuery(
+    "e1bccc14-6f95-43f1-9fd9-deb9ee1122cd"
+  );
 
   const [groups, setGroups] = useState<TrainingGroup[]>([
     {
@@ -63,10 +68,11 @@ export default function GroupsPage() {
           isOpen={isNewGroupModalOpen}
           setIsOpen={setIsNewGroupModalOpen}
           handleCreateGroup={handleCreateGroup}
+          refetch={refetch}
         />
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-        {groups.map((group) => (
+        {data?.map((group) => (
           <GroupCard
             group={group}
             key={group.id}

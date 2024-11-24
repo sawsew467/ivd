@@ -18,7 +18,7 @@ interface NewQuestionFormProps {
 export function NewQuestionForm({ onSubmit }: NewQuestionFormProps) {
   const [newQuestion, setNewQuestion] = useState<QuestionData>({
     id: "",
-    question_type: "singlechoice",
+    questionType: "single_choice",
     question: "",
     options: ["", ""],
   });
@@ -42,11 +42,11 @@ export function NewQuestionForm({ onSubmit }: NewQuestionFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Select
-        value={newQuestion.question_type}
+        value={newQuestion.questionType}
         onValueChange={(value) =>
           setNewQuestion({
             ...newQuestion,
-            question_type: value as QuestionType,
+            questionType: value as QuestionType,
           })
         }
       >
@@ -54,8 +54,8 @@ export function NewQuestionForm({ onSubmit }: NewQuestionFormProps) {
           <SelectValue placeholder="Select question type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="singlechoice">Single Choice</SelectItem>
-          <SelectItem value="multichoice">Multiple Choice</SelectItem>
+          <SelectItem value="single_choice">Single Choice</SelectItem>
+          <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
           <SelectItem value="essay">Essay</SelectItem>
         </SelectContent>
       </Select>
@@ -67,7 +67,7 @@ export function NewQuestionForm({ onSubmit }: NewQuestionFormProps) {
         placeholder="Question"
         required
       />
-      {newQuestion.question_type !== "essay" && (
+      {newQuestion.questionType !== "essay" && (
         <div className="space-y-2">
           {newQuestion.options.map((option, index) => (
             <div key={index} className="flex items-center space-x-2">

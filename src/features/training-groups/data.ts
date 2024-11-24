@@ -2,8 +2,8 @@ import { Group } from "./types";
 
 export const group: Group = {
   id: "1",
-  name: "Web Development Mastery",
-  description: "A comprehensive training program for aspiring web developers.",
+  name: "IVD - Inspired Vision Dynamics",
+  description: "A comprehensive training program for developers.",
   members: [
     {
       id: "1",

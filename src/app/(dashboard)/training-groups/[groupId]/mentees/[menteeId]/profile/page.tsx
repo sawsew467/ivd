@@ -1,25 +1,20 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { group } from "@/features/training-groups/data";
-import { useParams } from "next/navigation";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { useUser } from "@clerk/nextjs";
 
 function Page() {
-  const { menteeId } = useParams();
-  const mentee = group.members?.find((member) => member.id === menteeId);
+  const { user } = useUser();
+
   return (
     <div className="flex flex-col items-center mb-4">
       <Avatar className="w-20 h-20 mb-2">
-        <AvatarImage src={mentee?.avatar} alt={mentee?.name} />
-        <AvatarFallback className="w-20 h-20 mb-2">
-          {mentee?.name
-            ?.split(" ")
-            .map((n) => n[0])
-            .join("")}
-        </AvatarFallback>
+        <AvatarImage src={user?.imageUrl} alt={user?.fullName || ""} />
       </Avatar>
-      <p className="text-3xl font-semibold">{mentee?.name}</p>
-      <p className="text-md text-muted-foreground">{mentee?.email}</p>
+      <p className="text-3xl font-semibold">{user?.fullName}</p>
+      <p className="text-md text-muted-foreground">
+        {user?.emailAddresses[0]?.emailAddress}
+      </p>
     </div>
   );
 }

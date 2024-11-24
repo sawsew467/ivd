@@ -28,17 +28,15 @@ import {
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import Link from "next/link";
-
-const user = {
-  name: "John Doe",
-  email: "john@example.com",
-  avatarUrl: "https://github.com/shadcn.png",
-};
+import { useClerk, useUser } from "@clerk/nextjs";
 
 function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const [isOpen, setIsOpen] = useState(false);
+  const { signOut } = useClerk();
+
+  const { user } = useUser();
 
   return (
     <SidebarProvider>
@@ -66,7 +64,10 @@ function DashboardLayout({
                     className="relative h-8 w-8 rounded-full"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatarUrl} alt={user.name} />
+                      <AvatarImage
+                        src={user?.imageUrl}
+                        alt={user?.fullName || ""}
+                      />
                       <AvatarFallback>
                         <User className="h-4 w-4" />
                       </AvatarFallback>
@@ -77,10 +78,10 @@ function DashboardLayout({
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user.name}
+                        {user?.fullName || "Anonymous"}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
+                        {user?.emailAddresses[0]?.emailAddress}
                       </p>
                     </div>
                   </DropdownMenuLabel>
@@ -104,7 +105,7 @@ function DashboardLayout({
                   <DropdownMenuItem>
                     <button
                       className="w-full text-left"
-                      onClick={() => console.log("Sign out")}
+                      onClick={() => signOut({ redirectUrl: "/" })}
                     >
                       Sign out
                     </button>

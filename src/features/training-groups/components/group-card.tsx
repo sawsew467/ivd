@@ -7,16 +7,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Users, Eye, Trash2, MoreVertical } from "lucide-react";
+import { Eye, Trash2, MoreVertical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { TrainingGroup } from "../types";
+import { GroupTraining } from "../types";
+import { format } from "date-fns";
 
 export const GroupCard = ({
   group,
   handleViewGroup,
   handleDeleteGroup,
 }: {
-  group: TrainingGroup;
+  group: GroupTraining;
   handleViewGroup: () => void;
   handleDeleteGroup: () => void;
 }) => {
@@ -35,7 +36,7 @@ export const GroupCard = ({
             {group.name}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Created on {group.createdAt.toLocaleDateString()}
+            Created on {format(group.createdAt, "dd/MM/yyyy")}
           </p>
         </div>
         <DropdownMenu>
@@ -59,10 +60,10 @@ export const GroupCard = ({
       </CardHeader>
       <CardContent>
         <p className="line-clamp-2 text-sm">{group.description}</p>
-        <div className="flex items-center mt-4">
+        {/* <div className="flex items-center mt-4">
           <Users className="mr-2 h-4 w-4" />
           <span className="text-sm">{group.members.length} members</span>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );

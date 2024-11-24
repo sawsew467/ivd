@@ -20,6 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { useGenerateRoadmapMutation } from "@/store/queries/roadmaps";
+import { RoadmapStep } from "@/features/roadmap-templates/types";
 
 const formSchema = z.object({
   name: z
@@ -34,11 +36,15 @@ const formSchema = z.object({
     .min(5, { message: "Prompt must be at least 5 characters." }),
 });
 
-function RoadmapGenerator() {
+function RoadmapGenerator({ userId = null }: { userId: string | null }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [isShowTemplateEditor, setIsShowTemplateEditor] = useState(false);
+  const [generateRoadmap, { isLoading }] = useGenerateRoadmapMutation();
+
+  // const [isShowTemplateEditor, setIsShowTemplateEditor] = useState(false);
+
+  const [template, setTempate] = useState<RoadmapStep[] | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,10 +70,32 @@ function RoadmapGenerator() {
     router.push(newPath);
   };
 
-  const handleGenerate = (values: z.infer<typeof formSchema>) => {
-    console.log("Generated Roadmap Data:", values);
-    setIsShowTemplateEditor(true);
-    toast.success("Roadmap generated successfully!");
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    prompt: string;
+  } | null>();
+
+  const handleGenerate = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const res = await generateRoadmap({
+        projectId: "e1bccc14-6f95-43f1-9fd9-deb9ee1122cd",
+        userId: userId,
+        roadmapTemplateId: null,
+        prompt: values.prompt,
+      });
+
+      setFormData(values);
+      console.log("🚀 ~ handleGenerate ~ res:", res);
+      setTempate(res.data);
+      toast.success("Roadmap generated successfully!");
+    } catch (error) {
+      console.error("Failed to generate roadmap:", error);
+      toast.error("Failed to generate roadmap.");
+    }
+    // console.log("Generated Roadmap Data:", values);
+    // setIsShowTemplateEditor(true);
+    // toast.success("Roadmap generated successfully!");
   };
 
   return (
@@ -136,13 +164,21 @@ function RoadmapGenerator() {
               </FormItem>
             )}
           />
-          <Button type="submit">
-            Generate
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Generating..." : "Generate"}
             <Sparkles />
           </Button>
         </form>
       </Form>
-      {isShowTemplateEditor && <TemplateEditor />}
+      {template && (
+        <TemplateEditor
+          template={template}
+          title={formData?.name}
+          description={formData?.description}
+          isTemplate={true}
+          userId={userId}
+        />
+      )}
     </div>
   );
 }

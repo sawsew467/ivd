@@ -1,11 +1,17 @@
+"use client";
+
+import { store } from "@/store";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Provider } from "react-redux";
 import { Toaster } from "sonner";
 
 function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div>
-      <Toaster />
-      <ClerkProvider>{children}</ClerkProvider>
+      <Provider store={store}>
+        <Toaster />
+        <ClerkProvider>{children}</ClerkProvider>
+      </Provider>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,12 +16,14 @@ import { RoadmapStep } from "../types";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCreateRoadmapMutation } from "@/store/queries/roadmaps";
+import { useRouter } from "next/navigation";
 
 export const initialRoadmapData: RoadmapStep[] = [
   {
-    step_number: 1,
+    stepNumber: 1,
     section: "Cooking Basics",
-    sub_section: [
+    subSection: [
       "Kitchen Safety and Hygiene",
       "Knife Skills",
       "Cooking Techniques (boiling, frying, baking, etc.)",
@@ -30,9 +32,9 @@ export const initialRoadmapData: RoadmapStep[] = [
     ],
   },
   {
-    step_number: 2,
+    stepNumber: 2,
     section: "Understanding Python",
-    sub_section: [
+    subSection: [
       "Python Basics",
       "Data Structures in Python",
       "Control Flow Tools in Python",
@@ -41,9 +43,9 @@ export const initialRoadmapData: RoadmapStep[] = [
     ],
   },
   {
-    step_number: 3,
+    stepNumber: 3,
     section: "Introduction to FastAPI",
-    sub_section: [
+    subSection: [
       "Installation of FastAPI",
       "FastAPI Principals",
       "Basics of FastAPI",
@@ -52,9 +54,9 @@ export const initialRoadmapData: RoadmapStep[] = [
     ],
   },
   {
-    step_number: 4,
+    stepNumber: 4,
     section: "Advanced FastAPI",
-    sub_section: [
+    subSection: [
       "API Models with Pydantic",
       "OAuth2 with Password and Bearer",
       "Security, Testing, Scaling FastAPI",
@@ -63,9 +65,9 @@ export const initialRoadmapData: RoadmapStep[] = [
     ],
   },
   {
-    step_number: 5,
+    stepNumber: 5,
     section: "Database Integration with FastAPI",
-    sub_section: [
+    subSection: [
       "SQL (Relational) Databases",
       "NoSQL Databases",
       "Mocking in Unit Tests",
@@ -77,23 +79,32 @@ export const initialRoadmapData: RoadmapStep[] = [
 
 export default function TemplateEditor({
   mode = "editor",
+  template,
+  title,
+  description,
+  isTemplate = false,
+  userId = null,
 }: {
   mode?: "editor" | "viewer";
+  template: RoadmapStep[];
+  title?: string;
+  description?: string;
+  isTemplate?: boolean;
+  userId?: string | null;
 }) {
-  const [roadmapData, setRoadmapData] =
-    useState<RoadmapStep[]>(initialRoadmapData);
+  const [roadmapData, setRoadmapData] = useState<RoadmapStep[]>(template);
   const [editingStep, setEditingStep] = useState<RoadmapStep | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCreate = (afterStep: number) => {
     const newStep: RoadmapStep = {
-      step_number: afterStep + 1,
+      stepNumber: afterStep + 1,
       section: "New Section",
-      sub_section: ["New Sub-section"],
+      subSection: ["New Sub-section"],
     };
     const updatedData = roadmapData.map((step) =>
-      step.step_number > afterStep
-        ? { ...step, step_number: step.step_number + 1 }
+      step.stepNumber > afterStep
+        ? { ...step, stepNumber: step.stepNumber + 1 }
         : step
     );
     updatedData.splice(afterStep, 0, newStep);
@@ -111,20 +122,42 @@ export default function TemplateEditor({
       return;
     }
     const updatedData = roadmapData
-      .filter((step) => step.step_number !== stepNumber)
+      .filter((step) => step.stepNumber !== stepNumber)
       .map((step) =>
-        step.step_number > stepNumber
-          ? { ...step, step_number: step.step_number - 1 }
+        step.stepNumber > stepNumber
+          ? { ...step, stepNumber: step.stepNumber - 1 }
           : step
       );
     setRoadmapData(updatedData);
+  };
+
+  const [createRoadmap, { isLoading }] = useCreateRoadmapMutation();
+
+  const router = useRouter();
+
+  const handleSubmit = async () => {
+    try {
+      const res = await createRoadmap({
+        title: title,
+        content: roadmapData,
+        description: description,
+        isTemplate: isTemplate,
+        userId: userId,
+        projectId: "e1bccc14-6f95-43f1-9fd9-deb9ee1122cd",
+      }).unwrap();
+      console.log("🚀 ~ handleSave ~ res:", res);
+      toast.success("Roadmap saved successfully!");
+      router.back();
+    } catch (error) {
+      console.log("🚀 ~ handleSave ~ error:", error);
+    }
   };
 
   const handleSave = () => {
     if (editingStep) {
       setRoadmapData(
         roadmapData.map((step) =>
-          step.step_number === editingStep.step_number ? editingStep : step
+          step.stepNumber === editingStep.stepNumber ? editingStep : step
         )
       );
       setIsModalOpen(false);
@@ -134,9 +167,9 @@ export default function TemplateEditor({
 
   const handleSubSectionChange = (index: number, value: string) => {
     if (editingStep) {
-      const updatedSubSections = [...editingStep.sub_section];
+      const updatedSubSections = [...editingStep.subSection];
       updatedSubSections[index] = value;
-      setEditingStep({ ...editingStep, sub_section: updatedSubSections });
+      setEditingStep({ ...editingStep, subSection: updatedSubSections });
     }
   };
 
@@ -144,17 +177,17 @@ export default function TemplateEditor({
     if (editingStep) {
       setEditingStep({
         ...editingStep,
-        sub_section: [...editingStep.sub_section, "New Sub-section"],
+        subSection: [...editingStep.subSection, "New Sub-section"],
       });
     }
   };
 
   const removeSubSection = (index: number) => {
     if (editingStep) {
-      const updatedSubSections = editingStep.sub_section.filter(
+      const updatedSubSections = editingStep.subSection.filter(
         (_, i) => i !== index
       );
-      setEditingStep({ ...editingStep, sub_section: updatedSubSections });
+      setEditingStep({ ...editingStep, subSection: updatedSubSections });
     }
   };
 
@@ -165,19 +198,19 @@ export default function TemplateEditor({
           Learning Roadmap
         </h1>
         <div className="space-y-4">
-          {roadmapData.map((step) => (
-            <Card key={step.step_number}>
+          {roadmapData?.map((step) => (
+            <Card key={step.stepNumber}>
               <CardHeader className="py-4">
                 <CardTitle className="flex items-center justify-between">
                   <span>
-                    {step.step_number}. {step.section}
+                    {step.stepNumber}. {step.section}
                   </span>
                   {mode === "editor" && (
                     <div className="flex space-x-2">
                       <Button
                         size="icon"
                         variant="outline"
-                        onClick={() => handleCreate(step.step_number)}
+                        onClick={() => handleCreate(step.stepNumber)}
                         aria-label={`Create new step after ${step.section}`}
                       >
                         <Plus className="h-4 w-4" />
@@ -193,7 +226,7 @@ export default function TemplateEditor({
                       <Button
                         size="icon"
                         variant="outline"
-                        onClick={() => handleDelete(step.step_number)}
+                        onClick={() => handleDelete(step.stepNumber)}
                         aria-label={`Delete ${step.section}`}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -209,7 +242,7 @@ export default function TemplateEditor({
                     mode === "editor" && "list-disc list-inside"
                   )}
                 >
-                  {step.sub_section.map((item, index) => (
+                  {step.subSection.map((item, index) => (
                     <li
                       key={index}
                       className={cn(
@@ -230,12 +263,14 @@ export default function TemplateEditor({
               <Button className="" variant="destructive">
                 Delete
               </Button>
-              <Button className="">Save roadmap</Button>
+              <Button className="" onClick={handleSubmit} disabled={isLoading}>
+                Save roadmap
+                {isLoading && <Loader className=" animate-spin" />}
+              </Button>
             </div>
           )}
         </div>
       </div>
-
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -251,7 +286,7 @@ export default function TemplateEditor({
                 className="mb-4"
                 aria-label="Section title"
               />
-              {editingStep.sub_section.map((subSection, index) => (
+              {editingStep.subSection.map((subSection, index) => (
                 <div key={index} className="flex mb-2">
                   <Input
                     value={subSection}

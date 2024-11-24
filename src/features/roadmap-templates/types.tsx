@@ -8,7 +8,7 @@ export type Template = {
 type SubSection = string;
 
 export type RoadmapStep = {
-  step_number: number;
+  stepNumber: number;
   section: string;
-  sub_section: SubSection[];
+  subSection: SubSection[];
 };

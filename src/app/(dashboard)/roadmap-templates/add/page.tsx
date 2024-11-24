@@ -24,7 +24,7 @@ function PageContent() {
       case null:
         return <RoadmapStarter />;
       case "ai":
-        return <RoadmapGenerator />;
+        return <RoadmapGenerator userId={null} />;
       default:
         return null; // Handle unexpected cases
     }

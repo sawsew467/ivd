@@ -24,7 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { faker } from "@faker-js/faker";
+import { useAddNewGroupMutation } from "@/store/queries/groups";
 
 const formSchema = z.object({
   name: z
@@ -40,13 +40,10 @@ interface AddGroupModalProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   handleCreateGroup: (group: TrainingGroup) => void;
+  refetch: () => void;
 }
 
-function AddGroupModal({
-  isOpen,
-  setIsOpen,
-  handleCreateGroup,
-}: AddGroupModalProps) {
+function AddGroupModal({ isOpen, setIsOpen, refetch }: AddGroupModalProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,18 +55,27 @@ function AddGroupModal({
 
   const { isSubmitting } = form.formState;
 
+  const [addNewGroup] = useAddNewGroupMutation();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const newGroup: TrainingGroup = {
-        id: faker.string.uuid(),
+      const res = await addNewGroup({
         name: values.name,
         description: values.description,
-        members: [],
-        createdAt: new Date(),
-        avatar: "/placeholder.svg?height=100&width=100",
-      };
+        projectId: "e1bccc14-6f95-43f1-9fd9-deb9ee1122cd",
+      }).unwrap();
+      refetch();
+      console.log("🚀 ~ onSubmit ~ res:", res);
+      // const newGroup: TrainingGroup = {
+      //   id: faker.string.uuid(),
+      //   name: values.name,
+      //   description: values.description,
+      //   members: [],
+      //   createdAt: new Date(),
+      //   avatar: "/placeholder.svg?height=100&width=100",
+      // };
 
-      handleCreateGroup(newGroup);
+      // handleCreateGroup(newGroup);
       toast.success("Group created successfully!");
       form.reset();
       setIsOpen(false);

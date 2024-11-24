@@ -56,7 +56,7 @@ export function Question({
   return (
     <Card>
       <CardHeader
-        className={cn("py-4", question.question_type === "essay" && "pb-0")}
+        className={cn("py-4", question.questionType === "essay" && "pb-0")}
       >
         <CardTitle className="flex items-start justify-between">
           <div>
@@ -65,7 +65,7 @@ export function Question({
             </p>
             <h3 className="font-bold">{question.question}</h3>
             <p className="text-sm text-gray-500 mt-2">
-              Type: {question.question_type}
+              Type: {question.questionType}
             </p>
           </div>
           <div className="flex space-x-2">
@@ -98,11 +98,11 @@ export function Question({
                 </DialogHeader>
                 <div className="space-y-4">
                   <Select
-                    value={editedQuestion.question_type}
+                    value={editedQuestion.questionType}
                     onValueChange={(value) =>
                       setEditedQuestion({
                         ...editedQuestion,
-                        question_type: value as QuestionType,
+                        questionType: value as QuestionType,
                       })
                     }
                   >
@@ -110,10 +110,10 @@ export function Question({
                       <SelectValue placeholder="Select question type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="singlechoice">
+                      <SelectItem value="single_choice">
                         Single Choice
                       </SelectItem>
-                      <SelectItem value="multichoice">
+                      <SelectItem value="multiple_choice">
                         Multiple Choice
                       </SelectItem>
                       <SelectItem value="essay">Essay</SelectItem>
@@ -129,7 +129,7 @@ export function Question({
                     }
                     placeholder="Question"
                   />
-                  {editedQuestion.question_type !== "essay" && (
+                  {editedQuestion.questionType !== "essay" && (
                     <div className="space-y-2">
                       {editedQuestion.options.map((option, index) => (
                         <div
@@ -179,7 +179,7 @@ export function Question({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {question.question_type !== "essay" && (
+        {question.questionType !== "essay" && (
           <ul className="list-disc list-inside mb-2">
             {question.options.map((option, index) => (
               <li key={index}>{option}</li>

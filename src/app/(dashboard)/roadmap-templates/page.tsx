@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -17,11 +18,16 @@ import {
 
 import { Template } from "@/features/roadmap-templates/types";
 import { templates } from "@/features/roadmap-templates/data";
+import { useGetAllRoadmapsQuery } from "@/store/queries/roadmaps";
 
 function TemplateManagement() {
   const router = useRouter();
 
   const [templatesState, setTemplatesState] = useState<Template[]>(templates);
+  console.log("🚀 ~ TemplateManagement ~ templatesState:", templatesState);
+
+  const { data } = useGetAllRoadmapsQuery("");
+  console.log("🚀 ~ TemplateManagement ~ data:", data);
 
   const handleEdit = (
     id: number,
@@ -83,7 +89,7 @@ function TemplateManagement() {
         </Dialog>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templatesState.map((template) => (
+        {data?.map((template: any) => (
           <TemplateCard
             key={template.id}
             template={template}

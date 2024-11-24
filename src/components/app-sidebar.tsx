@@ -3,7 +3,7 @@
 import * as React from "react";
 import {
   AudioWaveform,
-  Book,
+  // Book,
   ChartNoAxesGantt,
   Command,
   GalleryVerticalEnd,
@@ -107,7 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.platform} name={"Platform"} />

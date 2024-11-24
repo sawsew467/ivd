@@ -1,117 +1,196 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { QuestionData } from "./test-editor";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import axios from "axios";
 
-interface TestTakerProps {
-  questions: QuestionData[] | null;
-}
+export function TestTaker({ exam }: any) {
+  const questions = exam?.questions;
+  const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isShowEvaluation, setIsShowEvaluation] = useState(false);
+  const [evaluation, setEvaluation] = useState<any>();
 
-export function TestTaker({ questions }: TestTakerProps) {
-  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
-
-  const handleSingleChoiceChange = (questionId: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+  const handleSingleChoiceChange = (questionIndex: number, value: string) => {
+    setAnswers((prev) => ({ ...prev, [questionIndex]: value }));
   };
 
-  const handleMultiChoiceChange = (
-    questionId: string,
+  const handleMultipleChoiceChange = (
+    questionIndex: number,
     value: string,
     checked: boolean
   ) => {
     setAnswers((prev) => {
-      const currentAnswers = (prev[questionId] as string[]) || [];
+      const currentAnswers = (prev[questionIndex] as string[]) || [];
       if (checked) {
-        return { ...prev, [questionId]: [...currentAnswers, value] };
+        return { ...prev, [questionIndex]: [...currentAnswers, value] };
       } else {
         return {
           ...prev,
-          [questionId]: currentAnswers.filter((v) => v !== value),
+          [questionIndex]: currentAnswers.filter((v) => v !== value),
         };
       }
     });
   };
 
-  const handleEssayChange = (questionId: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+  const handleEssayChange = (questionIndex: number, value: string) => {
+    setAnswers((prev) => ({ ...prev, [questionIndex]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log("Test Submission:", answers);
-    // Here you would typically send this data to a server
-    alert("Test submitted successfully!");
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    const submissionData = {
+      exam: questions.map((question: any, index: number) => ({
+        question_type: question.questionType,
+        question: question.question,
+        options: question.options || [],
+        ai_answer: question.aiAnswer || [],
+        user_answer: Array.isArray(answers[index])
+          ? answers[index]
+          : answers[index]
+          ? [answers[index]]
+          : [],
+      })),
+    };
+
+    try {
+      const res = await axios(
+        "http://mcg48gs4wco400w0oww80gcg.34.66.59.129.sslip.io:8989/exam_generator/api/exams/evaluate/",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          data: submissionData,
+        }
+      );
+      setEvaluation(res?.data);
+      setIsShowEvaluation(true);
+      console.log("🚀 ~ handleSubmit ~ res:", res);
+    } catch (error) {
+      console.error("Failed to submit");
+      console.log("🚀 ~ handleSubmit ~ error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="">
       <h1 className="text-3xl font-bold text-center mb-8">Your test</h1>
-      {questions?.map((question, index) => (
-        <Card key={question.id} className="mb-4">
+      {questions?.map((question: any, index: number) => (
+        <Card key={index} className="mb-4">
           <CardHeader>
             <p>Question {index + 1}:</p>
             <CardTitle>{question.question}</CardTitle>
           </CardHeader>
           <CardContent>
-            {question.question_type === "singlechoice" && (
+            {question.questionType === "single_choice" && (
               <RadioGroup
                 onValueChange={(value) =>
-                  handleSingleChoiceChange(question.id, value)
+                  handleSingleChoiceChange(index, value)
                 }
-                value={answers[question.id] as string}
+                value={answers[index] as string}
               >
-                {question.options.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-2">
+                {question.options.map((option: any, optionIndex: number) => (
+                  <div
+                    key={optionIndex}
+                    className="flex items-center space-x-2"
+                  >
                     <RadioGroupItem
                       value={option}
-                      id={`${question.id}-${index}`}
+                      id={`question-${index}-option-${optionIndex}`}
                     />
-                    <Label htmlFor={`${question.id}-${index}`}>{option}</Label>
+                    <Label htmlFor={`question-${index}-option-${optionIndex}`}>
+                      {option}
+                    </Label>
                   </div>
                 ))}
               </RadioGroup>
             )}
-            {question.question_type === "multichoice" && (
+            {question.questionType === "multiple_choice" && (
               <div className="space-y-2">
-                {question.options.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-2">
+                {question.options.map((option: any, optionIndex: number) => (
+                  <div
+                    key={optionIndex}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
-                      id={`${question.id}-${index}`}
-                      checked={(
-                        (answers[question.id] as string[]) || []
-                      ).includes(option)}
+                      id={`question-${index}-option-${optionIndex}`}
+                      checked={((answers[index] as string[]) || []).includes(
+                        option
+                      )}
                       onCheckedChange={(checked) =>
-                        handleMultiChoiceChange(
-                          question.id,
+                        handleMultipleChoiceChange(
+                          index,
                           option,
                           checked as boolean
                         )
                       }
                     />
-                    <Label htmlFor={`${question.id}-${index}`}>{option}</Label>
+                    <Label htmlFor={`question-${index}-option-${optionIndex}`}>
+                      {option}
+                    </Label>
                   </div>
                 ))}
               </div>
             )}
-            {question.question_type === "essay" && (
+            {question.questionType === "essay" && (
               <Textarea
                 placeholder="Type your answer here..."
-                value={(answers[question.id] as string) || ""}
-                onChange={(e) => handleEssayChange(question.id, e.target.value)}
+                value={(answers[index] as string) || ""}
+                onChange={(e) => handleEssayChange(index, e.target.value)}
                 className="w-full"
               />
             )}
           </CardContent>
         </Card>
       ))}
-      <Button onClick={handleSubmit} className="mt-4">
-        Submit Test
+      <Button onClick={handleSubmit} className="mt-4" disabled={isLoading}>
+        {isLoading ? "Submitting Test..." : "Submit Test"}
       </Button>
+      <Dialog open={isShowEvaluation} onOpenChange={setIsShowEvaluation}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Exam Evaluation</DialogTitle>
+            <DialogDescription>
+              Review your exam feedback and total score below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <span className="col-span-4 font-semibold">Feedback:</span>
+              <p className="col-span-4 text-sm text-muted-foreground">
+                {evaluation?.feedback}
+              </p>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <span className="col-span-4 font-semibold">Total Score:</span>
+              <p className="col-span-4 text-lg font-bold">
+                {evaluation?.total_score}
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsShowEvaluation(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

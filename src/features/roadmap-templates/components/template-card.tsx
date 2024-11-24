@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Edit, Trash2 } from "lucide-react";
 
 import {
@@ -20,7 +21,7 @@ import {
 import { Template } from "../types";
 
 type TemplateCardProps = {
-  template: Template;
+  template: any;
   onEdit: (id: number, updatedData: Partial<Omit<Template, "id">>) => void;
   onDelete: (id: number) => void;
 };
@@ -30,14 +31,14 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
   onEdit,
   onDelete,
 }) => (
-  <Card className="w-full">
+  <Card className="w-full flex flex-col">
     <CardHeader>
-      <CardTitle>{template.title}</CardTitle>
+      <CardTitle>{template?.title}</CardTitle>
     </CardHeader>
-    <CardContent>
-      <p className="text-sm text-gray-500">{template.subtitle}</p>
+    <CardContent className="flex-1 flex flex-col">
+      <p className="text-sm text-gray-500 flex-1">{template?.description}</p>
       <p className="mt-2 text-sm font-medium">
-        Missions: {template.missionCount}
+        Missions: {template?.content?.length}
       </p>
     </CardContent>
     <CardFooter className="justify-end space-x-2">

@@ -21,3 +21,11 @@ export interface Group {
   description: string;
   members: Member[];
 }
+
+export interface GroupTraining {
+  id: string;
+  name: string;
+  description: string;
+  projectId: string;
+  createdAt: string;
+}

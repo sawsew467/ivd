@@ -36,7 +36,7 @@ function FileCard({
         <File className="h-10 w-10 mr-2" color="#6b7280" />
         <div className="flex-1 truncate">
           <h3 className="font-semibold truncate">{file.name}</h3>
-          <p className="text-sm text-muted-foreground">{file.size}</p>
+          {/* <p className="text-sm text-muted-foreground">{file.size}</p> */}
         </div>
       </div>
     </div>

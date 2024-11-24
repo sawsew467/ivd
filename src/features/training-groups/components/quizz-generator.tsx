@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -20,8 +21,9 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { DocumentSelectModal } from "./document-select-modal";
-import { FileItem } from "@/features/documents/types";
 import TestEditor from "./test-editor";
+import { useGenerateExamMutation } from "@/store/queries/exams";
+import { useGetUserRoadmapsQuery } from "@/store/queries/roadmaps";
 
 const formSchema = z
   .object({
@@ -32,55 +34,41 @@ const formSchema = z
       .number()
       .min(1, { message: "Number of questions must be at least 1." })
       .max(100, { message: "Number of questions cannot exceed 100." }),
-    singleChoicePercentage: z
-      .number()
-      .min(0, { message: "Percentage cannot be negative." })
-      .max(100, { message: "Percentage cannot exceed 100." }),
-    multipleChoicePercentage: z
-      .number()
-      .min(0, { message: "Percentage cannot be negative." })
-      .max(100, { message: "Percentage cannot exceed 100." }),
-    essayPercentage: z
-      .number()
-      .min(0, { message: "Percentage cannot be negative." })
-      .max(100, { message: "Percentage cannot exceed 100." }),
-    documents: z.array(z.number()),
+    single_choicePercentage: z.string(),
+    // .min(0, { message: "Percentage cannot be negative." })
+    // .max(100, { message: "Percentage cannot exceed 100." }),
+    multipleChoicePercentage: z.string(),
+    // .min(0, { message: "Percentage cannot be negative." })
+    // .max(100, { message: "Percentage cannot exceed 100." }),
+    essayPercentage: z.string(),
+    // .min(0, { message: "Percentage cannot be negative." })
+    // .max(100, { message: "Percentage cannot exceed 100." }),
+    documents: z.array(z.string()),
   })
   .refine(
     (data) => {
       const total =
-        data.singleChoicePercentage +
-        data.multipleChoicePercentage +
-        data.essayPercentage;
+        +data.single_choicePercentage +
+        +data.multipleChoicePercentage +
+        +data.essayPercentage;
       return total === 100;
     },
     {
       message: "The sum of all percentages must equal 100%",
       path: [
-        "singleChoicePercentage",
+        "single_choicePercentage",
         "multipleChoicePercentage",
         "essayPercentage",
       ],
     }
   );
 
-const files: FileItem[] = [
-  { id: 10, name: "beach.jpg", type: "file", size: "2.2 MB" },
-  { id: 11, name: "mountains.jpg", type: "file", size: "3.1 MB" },
-  { id: 12, name: "profile_picture.jpg", type: "file", size: "3.2 MB" },
-  {
-    id: 14,
-    name: "1_001_C24TTK_22406_83091_001_C24TTK_22406_8309.pdf",
-    type: "file",
-    size: "2.5 MB",
-  },
-];
-
 function QuizGenerator() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [isShowQuizzEditor, setIsShowQuizzEditor] = useState(false);
+  console.log("🚀 ~ QuizGenerator ~ isShowQuizzEditor:", isShowQuizzEditor);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -88,15 +76,15 @@ function QuizGenerator() {
     defaultValues: {
       requirement: "",
       numberOfQuestions: 10,
-      singleChoicePercentage: 40,
-      multipleChoicePercentage: 40,
-      essayPercentage: 20,
+      single_choicePercentage: "40",
+      multipleChoicePercentage: "40",
+      essayPercentage: "20",
       documents: [],
     },
     mode: "onChange",
   });
 
-  const { isSubmitting, errors } = form.formState;
+  const { errors } = form.formState;
 
   const handleBack = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -108,13 +96,41 @@ function QuizGenerator() {
     router.push(newPath);
   };
 
-  const handleGenerate = (values: z.infer<typeof formSchema>) => {
-    console.log("Generated Quiz Data:", values);
-    setIsShowQuizzEditor(true);
-    toast.success("Quiz generated successfully!");
+  const [generateExam, { isLoading }] = useGenerateExamMutation();
+
+  const { data: roadmaps } = useGetUserRoadmapsQuery({});
+
+  const [exam, setExam] = useState<any>();
+
+  const handleGenerate = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const res = await generateExam({
+        title: "",
+        description: "",
+        docsIds: values.documents,
+        projectId: "e1bccc14-6f95-43f1-9fd9-deb9ee1122cd",
+        candidateId: "0e9de8ba-b406-4f73-89c5-94e9a9c2ee9e",
+        roadmapId: roadmaps?.[0]?.id,
+        prompt: values.requirement,
+        ratioQuestion: {
+          singleChoice: +values.single_choicePercentage / 100,
+          multipleChoice: +values.multipleChoicePercentage / 100,
+          essay: +values.essayPercentage / 100,
+        },
+        numberOfQuestions: values.numberOfQuestions,
+      }).unwrap();
+      setExam(res);
+      console.log("🚀 ~ handleGenerate ~ res:", res);
+      // refetch();
+      setIsShowQuizzEditor(true);
+      toast.success("Quiz generated successfully!");
+    } catch (error) {
+      console.log("🚀 ~ handleGenerate ~ error:", error);
+      toast.error("Failed to generate quiz. Please try again later.");
+    }
   };
 
-  const handleDocumentModalClose = (selectedFiles?: number[]) => {
+  const handleDocumentModalClose = (selectedFiles?: string[]) => {
     setIsDocumentModalOpen(false);
     if (selectedFiles) {
       form.setValue("documents", selectedFiles);
@@ -179,7 +195,7 @@ function QuizGenerator() {
           <div className="grid grid-cols-3 gap-4">
             <FormField
               control={form.control}
-              name="singleChoicePercentage"
+              name="single_choicePercentage"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Single Choice %</FormLabel>
@@ -233,7 +249,7 @@ function QuizGenerator() {
             />
           </div>
           <FormMessage>
-            {errors.singleChoicePercentage?.message ||
+            {errors.single_choicePercentage?.message ||
               errors.multipleChoicePercentage?.message ||
               errors.essayPercentage?.message}
           </FormMessage>
@@ -263,17 +279,16 @@ function QuizGenerator() {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isSubmitting}>
-            Generate
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Generating..." : "Generate"}
             <Sparkles className="ml-2" />
           </Button>
         </form>
       </Form>
-      {!isShowQuizzEditor && <TestEditor />}
+      {exam && <TestEditor exam={exam} />}
       <DocumentSelectModal
         isOpen={isDocumentModalOpen}
         onClose={handleDocumentModalClose}
-        files={files}
       />
     </div>
   );
